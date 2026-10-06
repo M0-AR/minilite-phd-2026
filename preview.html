@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>minilite — Build SQLite From Scratch | 1M Rows, 3 Pages</title>
+<style>
+:root{--bg:#0b1020;--card:#141b33;--ink:#e8ecff;--mut:#9aa4c7;--acc:#7c9bff;--grn:#3ddc84;--amb:#ffb454;--red:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1020px;margin:0 auto;padding:32px 20px 80px}
+.hero{background:linear-gradient(135deg,#1a2450,#0e3a5d);border:1px solid #2a3a7a;border-radius:20px;padding:36px 32px}
+.hero h1{margin:0 0 8px;font-size:34px}.tag{color:var(--mut)}.badges img{margin-right:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:22px 0}
+.card{background:var(--card);border:1px solid #26315c;border-radius:14px;padding:16px}
+.card h3{margin:0 0 8px}.num{font-size:28px;font-weight:800;color:var(--grn)}
+pre,code{background:#0a0f22;border:1px solid #26315c;border-radius:10px}pre{padding:14px;overflow:auto}
+.bar{height:12px;background:#222b52;border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--grn))}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px 10px;border-bottom:1px solid #26315c;text-align:left}th{color:var(--mut)}
+.term{background:#05070f;border:1px solid #2a3a7a;border-radius:12px;padding:0;overflow:hidden}.term .hd{background:#161d3a;padding:8px 12px;color:var(--mut);font-size:13px}.term .bd{padding:16px;min-height:220px;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
+.q{border:1px solid #26315c;border-radius:12px;padding:14px;margin:10px 0;background:#10162e}.q button{margin:6px 8px 0 0;background:#223; color:var(--ink);border:1px solid #3a4a8a;border-radius:8px;padding:8px 12px;cursor:pointer}.q button:hover{border-color:var(--acc)}
+.ok{color:var(--grn)}.bad{color:var(--red)}.mut{color:var(--mut)}
+.arch{display:flex;gap:8px;flex-wrap:wrap}.arch div{background:#10162e;border:1px solid #33427f;border-radius:10px;padding:10px 12px;font-size:14px}
+a{color:var(--acc)}
+</style>
+</head>
+<div class="wrap">
+<div class="hero">
+<h1>minilite — Build SQLite From Scratch</h1>
+<div class="tag">One Python file · zero dependencies · 1,000,000 users · find <b>777777</b> in <b>3 pages / 25,716</b> · crash-proof · SQLite plan-parity</div>
+<p><a href="#quiz">Take the 10-question quiz →</a> · <a href="#bench">Benchmarks</a> · <a href="#terminal">Live terminal</a> · <a href="#pages">GitHub Pages</a></p>
+<div class="badges"><img alt="python" src="https://img.shields.io/badge/python-3.12-blue"> <img alt="tests" src="https://img.shields.io/badge/tests-33_passing-brightgreen"> <img alt="license" src="https://img.shields.io/badge/license-MIT-green"></div>
+</div>
+
+<h2>CEO summary — 5 sentences</h2>
+<div class="card"><ol>
+<li>Every phone and browser runs SQLite; minilite rebuilds its core so anyone can see how it works.</li>
+<li>One million users in one file; user 777777 found in 3 pages (0.4 ms at 100k, 3.5 ms at 1M Python).</li>
+<li>Email without index scans 25,718 pages (3.2 s); with index 7 pages (3.8 ms) — planner prints its choice.</li>
+<li>Kill mid-write: without journal corrupt, with journal auto-heals on reopen — both demonstrated.</li>
+<li>One-command Docker reproduce, layer-by-layer teaching, browser quiz, real SQLite + live BTC comparison.</li>
+</ol></div>
+
+<h2 id="bench">Benchmarks (measured 2026-10-06, laptop SSD, Python 3.12)</h2>
+<div class="grid">
+<div class="card"><div class="num">3 / 25,716</div>pages for id=777777 at 1M (0.012%)</div>
+<div class="card"><div class="num">900×</div>point (3.5 ms) vs scan (3,210 ms) at 1M</div>
+<div class="card"><div class="num">7 pages</div>indexed email at 1M (3.8 ms)</div>
+<div class="card"><div class="num">33/33</div>checks green + crash + live BTC verified</div>
+</div>
+<table><tr><th>rows</th><th>pages</th><th>depth</th><th>point</th><th>scan</th><th>indexed</th></tr>
+<tr><td>20k</td><td>480</td><td>3</td><td>3 p / 0.32 ms</td><td>482 p / 37.9 ms</td><td>6 p / 0.48 ms</td></tr>
+<tr><td>100k</td><td>2,449</td><td>3</td><td>3 p / 0.40 ms</td><td>2,451 p / 238 ms</td><td>6 p / 0.63 ms</td></tr>
+<tr><td>1M</td><td>25,716</td><td>3</td><td>3 p / 3.52 ms</td><td>25,718 p / 3,210 ms</td><td>7 p / 3.81 ms</td></tr></table>
+<p class="mut">SQLite 10k parity: minilite 233 p / 954 KB vs SQLite 163 p / 668 KB (1.43× varint). Plans identical: SEARCH USING INTEGER PRIMARY KEY / SCAN / SEARCH USING INDEX.</p>
+<div class="card"><b>Scan cliff</b><div class="bar"><i style="width:100%"></i></div><span class="mut">scan grows linearly; point stays flat — the whole argument in one bar.</span></div>
+
+<h2>How it works — 6 layers</h2>
+<div class="arch"><div>1 Bytes<br><span class="mut">len-prefix, Ada 40B</span></div><div>2 Pages<br><span class="mut">4096B, ptr 9+2i</span></div><div>3 B-tree<br><span class="mut">split, root grows</span></div><div>4 SQL<br><span class="mut">tokens→plan→walk</span></div><div>5 Index<br><span class="mut">(email,id)→id→row</span></div><div>6 Journal<br><span class="mut">copy→fsync→delete</span></div></div>
+
+<h2 id="terminal">Live terminal (animated — same as video demo)</h2>
+<div class="term"><div class="hd">● minilite demo — no install, plays automatically</div><div class="bd" id="term"></div></div>
+<p class="mut">Record your own GIF: <code>vhs assets/demo.tape</code> or <code>asciinema rec demo.cast</code> + <code>agg</code> → commit <code>assets/demo.gif</code>.</p>
+
+<h2 id="quiz">Interactive quiz — zero → pro (10 questions)</h2>
+<p class="mut">Let's work this out in a step-by-step way to be sure we have the right answer. Click an answer — feedback explains every step.</p>
+<div id="quizbox"></div>
+<p><b>Score: <span id="score">0</span>/10</b> <span id="verdict" class="mut"></span></p>
+
+<h2>Exercises</h2>
+<div class="card"><ol>
+<li>Append-split: if new key is max, move only last row (2,958→1,475 at 100k).</li>
+<li>Add DELETE with freelist pages.</li>
+<li>Add <code>!=</code> — prove planner must scan.</li>
+<li>Varint-pack ints to match SQLite's 12,802 pages.</li>
+<li>WAL vs journal — measure 2× write amplification.</li>
+</ol></div>
+
+<h2 id="pages">GitHub Pages — share this page as your site</h2>
+<div class="card"><ol>
+<li>Push repo to GitHub.</li>
+<li>Settings → Pages → <b>Deploy from a branch</b> → Branch <b>main</b> → Folder <b>/docs</b> → Save.</li>
+<li>Open <code>https://&lt;you&gt;.github.io/&lt;repo&gt;/</code> — this exact page (quiz + terminal + tables) runs with no backend.</li>
+<li>Custom domain (optional): Pages → Custom domain → add <code>CNAME</code> + DNS <code>CNAME &lt;you&gt;.github.io</code>.</li>
+</ol>
+<p class="mut">Local: <code>python3 -m http.server 8000</code> → <code>/preview.html</code>. This file and <code>docs/index.html</code> are identical.</p></div>
+
+<h2>Quickstart</h2>
+<pre>git clone &lt;fork&gt; && cd minilite-phd-2026
+python3 tests/test_minilite.py
+python3 experiments/bench_point.py 100000
+docker build -t minilite-phd . && docker run --rm minilite-phd</pre>
+<p class="mut">Full paper study stays in README.md §§1–11 (nothing removed). This page is the visual companion.</p>
+</div>
+<script>
+const T=[
+"$ python3 tests/test_minilite.py\nok 33: file magic minilite v1  — 33 checks passed",
+"$ python3 experiments/bench_point.py 100000\nload 100000 rows 5.7s pages=2449 depth=3\nid point: 3/2449 pages 0.40ms  search using primary key\nemail scan: 2451 pages 238ms  scan users\nemail indexed: 6 pages 0.63ms  search using index",
+"$ python3 -c \"find user 777777\"\n[[777777,'User777777','user777777@example.com']]  3 pages"
+];
+let ti=0,tc=0;const el=document.getElementById('term');
+function type(){if(ti>=T.length)return;const s=T[ti];if(tc<=s.length){el.textContent=T.slice(0,ti).join("\n\n")+"\n\n"+s.slice(0,tc);tc+=2;setTimeout(type,24)}else{ti++;tc=0;setTimeout(type,900)}}type();
+const Q=[
+["CSV `Hopper, Grace` breaks because…",["comma splits the row|lengths are written down|pages are 4KB"],0,"Step 1: CSV guesses boundaries. Length-prefix writes them down, so comma = letter."],
+["Ada [1,'Ada Lovelace','ada@mail.com'] is…",["40 bytes|16 bytes|4096 bytes"],0,"Step 2: 1 + 9 + 15 + 15 = 40. Bob [2,'Bob'] = 16."],
+["Page size? Where is pointer i?",["4096B at 9+2i|512B at 0+i|1MB at end"],0,"Step 3: fixed 2B stride → jump, then bisect. 76 rows → 6 halves."],
+["B-tree height grows when…",["root splits|leaf splits|any insert"],0,"Step 4: only root split adds a level; all leaves stay equidistant."],
+["Lookup 65 with root [40,70]? ",["middle branch|left|right"],0,"Step 5: 40<65≤70 → middle. 3 reads/12 pages in tiny demo."],
+["`WHERE email=` with no index?",["scan all leaves|one descent|error"],0,"Step 6: table sorted by id → email anywhere → scan."],
+["With (email,id) index?",["index→id→row (7p at 1M)|still scans|one page"],0,"Step 7: second sort order. 25,718→7 pages."],
+["Journal commit moment?",["deleting the journal|first page write|opening"],0,"Step 8: before delete=old wins; after=new wins. No half-state."],
+["Leftover journal on open means…",["crash → copy back + truncate|ignore|delete db"],0,"Step 9: hot journal replay = healing."],
+["Sequential load wastes pages because…",["50/50 split leaves left half-empty|random is sorted|pages shrink"],0,"Step 10: 363 vs 264 pages at 20k (1.38×). Append-split fixes it."]
+];
+let score=0,answered={};const qb=document.getElementById('quizbox');
+Q.forEach((q,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<b>Q${i+1}. ${q[0]}</b><br>`;q[1][0].split('|').forEach((opt,j)=>{const b=document.createElement('button');b.textContent=opt;b.onclick=()=>{if(answered[i])return;answered[i]=1;const ok=j===q[2];if(ok){score++;b.style.borderColor='#3ddc84';d.innerHTML+=`<div class='ok'>✓ Correct. ${q[3]}</div>`}else{d.innerHTML+=`<div class='bad'>✗ Not quite. Let's reason: ${q[3]}</div>`}document.getElementById('score').textContent=score;document.getElementById('verdict').textContent=score===10?' — pro. You know more than most candidates.':score>=7?' — strong. Run the 1M bench next.':score>=4?' — warming up. Re-read the 6 steps above.':' — start at step 1, then retry.'};d.appendChild(b)});qb.appendChild(d)});
+</script>
+</html>

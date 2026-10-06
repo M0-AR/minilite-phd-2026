@@ -1,0 +1,11 @@
+services:
+  minilite:
+    build: .
+    volumes:
+      - ./data:/tmp
+    command: python3 experiments/bench_point.py 100000
+  bench-1m:
+    build: .
+    volumes:
+      - ./data:/tmp
+    command: python3 experiments/bench_point.py 1000000

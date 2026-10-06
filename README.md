@@ -7,7 +7,7 @@
 
 > **A complete database engine in one Python file — no libraries.** Bytes → pages → B-tree → SQL → indexes → crash safety. Verified to **1,000,000 users**, SQLite plan-parity, live-market proof, crash-injection proof.
 
-**🌐 Live interactive site:** open `preview.html` locally or enable GitHub Pages (Settings → Pages → Deploy from branch → `/docs`) and share `https://<you>.github.io/<repo>/` — same content as `docs/index.html`.
+**🌐 Live interactive site:** https://m0-ar.github.io/minilite-phd-2026/ — benchmarks, terminal, 10-question quiz. Local: open `preview.html`.
 **⚡ 30-second proof:** `python3 tests/test_minilite.py` → 33 green. `python3 experiments/bench_point.py 100000` → `3/2449 pages, 0.40ms`.
 
 ![minilite site](docs/preview.png)
@@ -80,7 +80,7 @@ Finish with the quiz in `preview.html` (10 questions, instant feedback, zero →
 - **Crash lab:** `crash_after=N` injection; journal-off corrupts, journal-on heals.
 - **Live-data lab:** real BTC price stored + indexed + verified (provenance printed).
 - **Hidden-pattern lab:** sequential vs random fill-factor, fanout law, index price, scan cliff.
-- **Teaching web:** `preview.html` + `docs/index.html` — benchmarks, diagrams, terminal animation, 10-question quiz, exercises.
+- **Teaching web:** `docs/preview.html` + `docs/index.html` canonical, `preview.html` + `index.html` root mirrors — benchmarks, diagrams, terminal animation, 10-question quiz, exercises.
 - **Reproducible:** `Dockerfile` + `docker-compose.yml`, 33 checks, fixed seeds.
 
 ---
@@ -171,16 +171,17 @@ Commit `assets/demo.gif` (keep <8 MB, 800×480, 15 fps). Reference: `![minilite 
 
 ## 🌐 Preview site + GitHub Pages
 
-`preview.html` (root) and `docs/index.html` (Pages) are the same beautiful page: summary, benchmarks, diagrams, terminal, quiz, exercises, Pages guide.
+One canonical page mirrored so every URL renders: `docs/preview.html` + `docs/index.html` (canonical), `preview.html` + `index.html` (root mirrors), `.nojekyll` in both folders.
 
-Enable Pages (2026 flow):
+| URL | Renders | Notes |
+|---|---|---|
+| `/` | ✅ | `docs/index.html` when source is `/docs` (recommended); root `index.html` redirect otherwise |
+| `/preview.html` | ✅ | canonical demo + quiz page |
+| `/docs/preview.html` | ✅ | same page under root source; 404 only if source is `/docs` (correct — use `/preview.html` then) |
 
-1. Push this repo to GitHub.
-2. Settings → Pages → **Deploy from a branch** → Branch `main` → Folder `/docs` → Save.
-3. Open `https://<username>.github.io/<repo>/` — the quiz, charts and terminal run as a static site, no backend.
-4. Optional: custom domain → Settings → Pages → Custom domain → add `CNAME` + DNS `CNAME <you>.github.io`.
+Recommended Settings → Pages → **Deploy from a branch** → Branch `main` → Folder `/docs` → Save. Then share `https://m0-ar.github.io/minilite-phd-2026/` and `https://m0-ar.github.io/minilite-phd-2026/preview.html`. Mirrors make the other setting non-fatal.
 
-Local: `python3 -m http.server 8000` → `/preview.html`. Screenshot: `docs/preview.png` (regenerate via Playwright — see `experiments/`).
+Local: `python3 -m http.server 8000` → `/preview.html`. Screenshot: `docs/preview.png`.
 
 ---
 
